@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Installation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plants PlantInstance[]
+}
+
+model Plant {
+  id            String  @id @default(cuid())
+  name          String
+  variety       String
+  lifespan      Int
+  pHCurve       Float[]
+  nutrientCurve Float[]
+
+  instances PlantInstance[]
+}
+
+model PlantInstance {
+  id          String    @id @default(cuid())
+  plantDate   DateTime  @default(now())
+  removalDate DateTime?
+
+  Installation   Installation? @relation(fields: [installationId], references: [id])
+  installationId String?
+  Plant          Plant?        @relation(fields: [plantId], references: [id])
+  plantId        String?
+}
